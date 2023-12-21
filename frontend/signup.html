@@ -22,34 +22,37 @@
             <div>
 
                 <label for="name">Name : </label>
-                <input type="text" id="name" name="name">
+                <input type="text" id="name" name="name" required>
             </div>
             <div>
 
                 <label for="email">Email : </label>
-                <input type="text" id="email" name="email">
+                <input type="email" id="email" name="email" required>
             </div>
 
             <div>
 
                 <label for="phone">Phone : </label>
-                <input type="text" id="phone" name="phone">
+                <input type="text" id="phone" name="phone" required>
             </div>
             
             <div>
 
                 <label for="password">Password : </label>
-                <input type="password" id="password" name="password">
+                <input type="password" id="password" name="password" required>
             </div>
 
             <div>
 
                 <label for="confirm-password">Confirm password : </label>
-                <input type="password" id="confirm-password" name="confirm-password">
+                <input type="password" id="confirm-password" name="confirm-password" required>
                 
             </div>
+            <button type="submit"> Submit</button>
         </form>
 
     </div>
 </body>
+<script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+<script src="/js/signup.js"></script>
 </html>
