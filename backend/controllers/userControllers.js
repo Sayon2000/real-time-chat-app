@@ -2,6 +2,7 @@ const User = require('../models/User')
 
 const bcrpt = require('bcrypt')
 const {Op} = require('sequelize')
+const jwt = require('jsonwebtoken')
 
 
 exports.createUser = async(req,res)=>{
@@ -29,5 +30,26 @@ exports.createUser = async(req,res)=>{
     }catch(e){
         console.log(e)
         return res.status(500).json({success : false , msg : "Internal server error"})
+    }
+}
+
+exports.login = async(req,res)=>{
+    try{
+        const {email , password} = req.body;
+        const user =await User.findOne({where : {email : email}})
+        if(!user)
+            return res.status(401).json({success : false , msg : "Wrong credentials"})
+        const compare = await bcrpt.compare(password , user.password)
+        if(compare){
+            const token = jwt.sign({id : user.id} , process.env.JWT_SECRET)
+            return res.json({success : true , token})
+        }else{
+            return res.status(401).json({success : false , msg : "Wrong credentials"})
+        }
+
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({success : false , msg : "Internal server error"})
+
     }
 }

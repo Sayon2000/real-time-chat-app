@@ -14,7 +14,8 @@ form.addEventListener('submit' , async(e)=>{
         const res = await axios.post('http://localhost:4000/user/login', data)
         console.log(res)
         if(res.status == 200){
-            alert(res.data.msg)
+            alert('logged in successfully')
+            localStorage.setItem('token' , res.data.token)
         }
 
 
