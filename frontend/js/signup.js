@@ -18,12 +18,14 @@ form.addEventListener('submit' , async(e)=>{
         console.log(res)
         if(res.status == 200){
             alert(res.data.msg)
+            e.target.name.value = ''
+            e.target.email.value = ''
+            e.target.phone.value = ''
+            e.target.password.value = ''
+            e.target['confirm-password'].value = ''
+            window.location = '/login.html'
         }
-        e.target.name.value = ''
-        e.target.email.value = ''
-        e.target.phone.value = ''
-        e.target.password.value = ''
-        e.target['confirm-password'].value = ''
+
     }else{
         alert('confirm password and passwords does not match ')
     }
