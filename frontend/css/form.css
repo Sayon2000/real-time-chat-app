@@ -1,0 +1,40 @@
+.container{
+    min-width: 50vw;
+    min-height: 60vh;
+    /* border: 2px solid black; */
+    margin :auto auto;
+
+}
+
+.container h2{
+    margin: 10px;
+    text-decoration: underline;
+    text-align: center;
+}
+
+.container > form {
+    display: flex;
+    flex-direction: column;
+}
+
+form input {
+    padding : 6px;
+    border-radius: 2px;
+    width: 40vw;
+    margin: auto;
+    font-size: large;
+
+}
+form > div{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center;
+    align-items: center; */
+}
+form > div > label{
+    /* margin : auto; */
+    font-size: larger;
+    margin: 10px 40% 10px 29%;
+
+}
+
