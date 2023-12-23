@@ -13,12 +13,21 @@ app.use(cors({
 
 const sequelize = require('./util/db')
 
+const User = require('./models/User')
+const Message = require('./models/Message')
+
+
+User.hasMany(Message)
+Message.belongsTo(User)
+
 //routes
 
 const userRoutes = require('./routes/userRoutes')
+const messageRoutes = require('./routes/messageRoutes')
 
 
 app.use('/user' , userRoutes)
+app.use('/message' , messageRoutes)
 
 
 sequelize

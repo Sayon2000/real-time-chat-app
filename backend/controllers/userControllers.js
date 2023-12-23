@@ -63,8 +63,6 @@ exports.getAll = async(req,res)=>{
             }
         },
         attributes : ['name']
-    
-        
     })
         return res.json({success : true , users})
     }catch(e){
@@ -72,3 +70,4 @@ exports.getAll = async(req,res)=>{
         return res.status(500).json({success : false , msg : "Internal server error"})
     }
 }
+
