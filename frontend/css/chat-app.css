@@ -28,6 +28,7 @@
     width: 40%;
     height: fit-content;
     font-size: medium;
+    text-align: end;
 }
 .send-messages > form {
     display: flex;
