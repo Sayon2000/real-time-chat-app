@@ -1,8 +1,12 @@
 const messages = document.querySelector('.messages')
 window.addEventListener('load' , renderElemets)
 
+setInterval(async()=>{
+    await renderElemets()}, 4000);
 async function renderElemets(){
     try{
+        document.querySelector('.messages').innerHTML = ``
+        // messages.innerHTML = ``
         if(!localStorage.getItem('token')){
             window.location = 'login.html'
         }
@@ -22,6 +26,10 @@ const p2 =  axios.get('http://localhost:4000/message/get-messages' , {
 const [res , messages ] = await Promise.all([p1,p2])
 console.log(res)
 console.log(messages)
+const div = document.createElement('div')
+div.textContent = 'You joined'
+div.className = 'u-joined'
+document.querySelector('.messages').appendChild(div)
 res.data.users.forEach(user => {
     showUser(user)
 })
@@ -37,17 +45,18 @@ messages.data.messages.forEach(message => {
 function showUser(user){
     const div = document.createElement('div')
     div.textContent = user.name +' joined'
-    div.className = 'o-message'
+    div.className = 'o-joined'
     messages.appendChild(div)
 }
 
 function showMessage(data , user){
     const div = document.createElement('div')
-    div.textContent = data.message
     if(user){
         div.className = 'u-message'
+        div.textContent = "You: "+ data.message
     }else{
         div.className = 'o-message'
+        div.textContent = data.user.name + ": "+ data.message
 
     }
 

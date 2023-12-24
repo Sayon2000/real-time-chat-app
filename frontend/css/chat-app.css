@@ -9,26 +9,46 @@
 
 .messages{
     min-height: 80vh;
+    max-height: 85vh;
     margin: 10px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: scroll;
 }
 
 
+.u-joined{
+    background: darkgrey;
+    padding: 10px;
+    width: 40%;
+    height: fit-content;
+    font-size: medium;
+    text-align: center;
+
+}
+.o-joined{
+    padding: 10px;
+    width: 40%;
+    height: fit-content;
+    font-size: medium;
+    text-align: center;
+
+}
 .u-message{
     background: darkgrey;
     padding: 10px;
     width: 40%;
     height: fit-content;
     font-size: medium;
+    text-align: end;
+
 }
 .o-message{
     padding: 10px;
     width: 40%;
     height: fit-content;
     font-size: medium;
-    text-align: end;
 }
 .send-messages > form {
     display: flex;
