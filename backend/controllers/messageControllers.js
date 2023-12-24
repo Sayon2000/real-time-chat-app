@@ -16,12 +16,12 @@ exports.addMessage = async (req, res) => {
 
 exports.getMessages = async (req, res) => {
     try {
-        const result = await Message.findAll({
-            include : {
-                model : User,
-                attributes : ['id' , 'name']
+        const id = req.query.id;
+        const result = await Message.findAll({where :{
+            id : {
+                [Op.gt] : id
             }
-        });
+        }});
         
         return res.json({success : true , messages : result , id : req.user.id})
     } catch (e) {
