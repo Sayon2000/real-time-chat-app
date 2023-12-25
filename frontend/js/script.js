@@ -1,4 +1,5 @@
 const messages = document.querySelector('.messages')
+let rendered = false
 window.addEventListener('load' , renderElemets)
 
 setInterval(async()=>{
@@ -30,7 +31,7 @@ const p2 =  axios.get(`http://localhost:4000/message/get-messages?id=${last}` , 
 const [res , res2 ] = await Promise.all([p1,p2])
 console.log(res)
 console.log(messages)
-// if(res2.data.messages.length > 0){
+if(res2.data.messages.length > 0 || !rendered){
     document.querySelector('.messages').innerHTML = ``
 const div = document.createElement('div')
 div.textContent = 'You joined'
@@ -53,7 +54,8 @@ messages.forEach(message => {
 })
 const element = document.querySelector('.messages')
 element.scrollTop = element.scrollHeight
-// }
+rendered = true
+}
     }catch(e){
         console.log(e)
     }

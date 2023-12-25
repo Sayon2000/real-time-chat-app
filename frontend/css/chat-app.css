@@ -3,10 +3,19 @@
     padding: 0;
 }
 
-.display >h2{
+h2{
     text-align: center;
 }
 
+.display{
+    display: flex;
+    flex-direction: row;
+
+}
+
+.group-message{
+    width: 74%;
+}
 .messages{
     min-height: 80vh;
     max-height: 85vh;

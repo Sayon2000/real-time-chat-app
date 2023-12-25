@@ -15,19 +15,30 @@ const sequelize = require('./util/db')
 
 const User = require('./models/User')
 const Message = require('./models/Message')
+const Group = require('./models/Group')
+const Member = require('./models/Member')
 
 
-User.hasMany(Message)
-Message.belongsTo(User)
 
+
+User.belongsToMany(Group , {through : Member})
+Group.belongsToMany( User, {through : Member})
+
+Group.hasMany(Message)
+Message.belongsTo(Group)
+
+Member.hasMany(Message)
+Message.belongsTo(Member)
 //routes
 
 const userRoutes = require('./routes/userRoutes')
 const messageRoutes = require('./routes/messageRoutes')
+const groupRoutes = require('./routes/groupRoutes')
 
 
 app.use('/user' , userRoutes)
 app.use('/message' , messageRoutes)
+app.use('/group' , groupRoutes)
 
 
 sequelize
