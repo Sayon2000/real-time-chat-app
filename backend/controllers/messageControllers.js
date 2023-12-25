@@ -11,28 +11,8 @@ exports.addMessage = async (req, res) => {
         const message = req.body.message;
         const member = await Member.findOne({groupId , id : memberId})
         const result = await member.createMessage({message , groupId})
-        // const result =await User.findMessages(group)        
         return res.json(result)
-        console.log(group)
-        if (group != null) {
-            // const group = groups[0]
-            // const msg = await req.user.addMessage()
-            const result = await req.user.addGroup(group, {through : {
-
-                message: 'this is message from backend'
-            }
-
-            })
-            // const result = await Message.create({
-            //     userId : req.user.id,
-            //     groupId : group.id,
-            //     message : message
-            // })
-            console.log(result)
-            return res.json({ success: true, result })
-        } else {
-            return res.status(403).json({ msg: "You don't have access" })
-        }
+        
 
     } catch (e) {
         console.log(e)
@@ -45,6 +25,11 @@ exports.getMessages = async (req, res) => {
     try {
         const id = req.body.groupId;
         const group = await Group.findByPk(id)
+        const member = await req.user.getGroups({where : {id }})
+        if(member.length == 0 ){
+            return res.status(401).json({msg :"unauthorized access"})
+        }
+        // return res.json(member)
         const result = await group.getMessages();
 
         return res.json({ success: true, messages: result, id: req.user.id })
