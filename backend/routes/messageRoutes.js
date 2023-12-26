@@ -7,6 +7,6 @@ const messageControllers = require('../controllers/messageControllers')
 
 
 router.post('/add-message' , auth , messageControllers.addMessage)
-router.get('/get-messages' , auth , messageControllers.getMessages)
+router.get('/get-messages/:groupId' , auth , messageControllers.getMessages)
 
 module.exports = router;

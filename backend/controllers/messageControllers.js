@@ -28,7 +28,7 @@ exports.addMessage = async (req, res) => {
 
 exports.getMessages = async (req, res) => {
     try {
-        const id = req.body.groupId;
+        const id = req.params.groupId;
         const group = await Group.findByPk(id)
         const member = await req.user.getGroups({where : {id }})
         if(member.length == 0 ){
@@ -37,7 +37,7 @@ exports.getMessages = async (req, res) => {
         // return res.json(member)
         const result = await group.getMessages();
 
-        return res.json({ success: true, messages: result, id: req.user.id })
+        return res.json({ success: true, messages: result, id: member[0].member.id })
     } catch (e) {
         console.log(e)
         return res.status(500).json({ success: false, msg: "Internal server error" })

@@ -13,11 +13,41 @@ h2{
 
 }
 
+.hide{
+    display: none;
+}
+
+.groups{
+    min-width: 25vw;
+    max-width: 25vw;
+}
+
 .group-message{
     width: 74%;
 }
+
+
+.group-items{
+    background: #a0ffb157;
+    font-size: large;
+    margin: 8px 10px;
+    padding: 14px;
+    cursor: pointer;
+
+}
+
+.show-groups{
+    max-height: 90vh;
+    overflow-y: scroll;
+
+}
+
+.group-items:hover{
+    background: #98abbc8f;
+}
+
 .messages{
-    min-height: 80vh;
+    min-height: 85vh;
     max-height: 85vh;
     margin: 10px 0;
     display: flex;
