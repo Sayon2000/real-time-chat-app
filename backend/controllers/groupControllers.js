@@ -39,3 +39,22 @@ exports.joinGroup = async(req ,res)=>{
         return res.status(500).json({success : false , msg :"Internal server error"})
     }
 }
+
+exports.getUsers = async(req,res)=>{
+    try{    
+        const groupId = req.body.groupId
+        const groups = await req.user.getGroups({where : { id : groupId}})
+        if(groups.length == 1 ){
+            const group = groups[0]
+            const users = await group.getUsers()
+              return res.json(users)
+            }else{
+            return res.status(403).json({msg :"You are not part of the group"})
+
+        }
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({success : false , msg :"Internal server error"})
+    
+    }
+}

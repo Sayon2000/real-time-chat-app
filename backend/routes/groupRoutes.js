@@ -8,5 +8,7 @@ const groupController = require('../controllers/groupControllers')
 router.post('/create' , auth , groupController.createNewGroup)
 router.get('/get-groups' , auth , groupController.getGroups)
 router.get('/join-group/:groupId' , auth , groupController.joinGroup)
+router.get('/all-users' , auth ,groupController.getUsers)
+
 
 module.exports = router;
