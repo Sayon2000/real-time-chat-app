@@ -47,7 +47,7 @@ h2{
     &:active{
         background-color: brown;
         color: white;
-        outline: none;
+        /* outline: none; */
         user-select: none;
     }
   }
@@ -75,7 +75,7 @@ h2{
 .u-joined{
     background: darkgrey;
     padding: 10px;
-    width: 40%;
+    width: 40vw;
     height: fit-content;
     font-size: medium;
     text-align: center;
@@ -83,7 +83,7 @@ h2{
 }
 .o-joined{
     padding: 10px;
-    width: 40%;
+    width: 40vw;
     height: fit-content;
     font-size: medium;
     text-align: center;
@@ -92,7 +92,7 @@ h2{
 .u-message{
     background: darkgrey;
     padding: 10px;
-    width: 40%;
+    width: 40vw;
     height: fit-content;
     font-size: medium;
     text-align: end;
@@ -100,7 +100,7 @@ h2{
 }
 .o-message{
     padding: 10px;
-    width: 40%;
+    width: 40vw;
     height: fit-content;
     font-size: medium;
 }

@@ -2,7 +2,7 @@ const messages = document.querySelector('.messages')
 let rendered = false
 const groups = document.querySelector('.show-groups')
 window.addEventListener('load' , renderElemets)
-
+var curr_group =null
 
 async function renderElemets(){
     try{
@@ -55,46 +55,28 @@ function showGroups(group){
     }
 
     div.onclick = async()=>{
-        console.log(group.id)
-        try{
-            const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}` , {
-                headers : {
-                    'auth-token':localStorage.getItem('token')
-                }
-            })
-            const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}` ,{
-                headers : {
-                    'auth-token':localStorage.getItem('token')
-                }
-            })
-            console.log(res)
-            console.log(res2)
-            messages.innerHTML =``
-            document.querySelector('.group-message h2').textContent = group.name
-            res.data.messages.forEach(message =>{
-                showMessage(message ,res.data.id , res2.data )
-            })
-            
-        }catch(e){
-            console.log(e)
-        }
+        curr_group = group
+        await showGroupMessages()
     }
 
     groups.appendChild(div)
 }
 
-// setInterval(async()=>{
-//     await renderElemets()}, 4000);
-// async function renderElemets(){
+setInterval(async()=>{
+    if(curr_group)
+        await showGroupMessages()
+}, 4000);
+// async function displayMessages(){
 //     try{
-//         // let messages = []
+//         if(groupId){
+
+        
+//         let messages = []
 //         // if(localStorage.getItem('messages')){
 //         //     messages = JSON.parse(localStorage.getItem('messages'))
 //         // }
-//         // messages.innerHTML = ``
-//         if(!localStorage.getItem('token')){
-//             window.location = 'login.html'
-//         }
+//         messages.innerHTML = ``
+ 
 // const p1 =  axios.get('http://localhost:4000/user/all-users' , {
 //     headers : {
 //         'auth-token' : localStorage.getItem('token')
@@ -137,17 +119,17 @@ function showGroups(group){
 // element.scrollTop = element.scrollHeight
 // rendered = true
 // }
-//     }catch(e){
+//   }  }catch(e){
 //         console.log(e)
 //     }
 // }
 
-// function showUser(user){
-//     const div = document.createElement('div')
-//     div.textContent = user.name +' joined'
-//     div.className = 'o-joined'
-//     messages.appendChild(div)
-// }
+function showUser(user){
+    const div = document.createElement('div')
+    div.textContent = user.name +' joined'
+    div.className = 'o-joined'
+    messages.appendChild(div)
+}
 
 function showMessage(data , id, users){
     const div = document.createElement('div')
@@ -165,19 +147,26 @@ function showMessage(data , id, users){
     messages.appendChild(div)
 }
 
-// document.forms[0].addEventListener('submit' , sendMessage)
+document.querySelector('.send-messages form').addEventListener('submit' , sendMessage)
 
 async function sendMessage(e){
     try{
+        const groupId = curr_group.id
         e.preventDefault()
-        const data = {message : e.target.message.value}
+        const data = {
+            message : e.target.message.value,
+            groupId
+        }
         const res = await axios.post('http://localhost:4000/message/add-message' , data , {
             headers : {
                 'auth-token' : localStorage.getItem('token')
             }
         })
         console.log(res)
-        showMessage(data , true)
+        const div = document.createElement('div')
+        div.className = 'u-message'
+        div.textContent = "You: "+ data.message
+        messages.appendChild(div)
         e.target.message.value =''
     }catch(e){
         console.log(e)
@@ -209,3 +198,33 @@ async function createNewGroup(e){
 document.getElementById('crete-grp').addEventListener('click' , ()=>{
     document.querySelector('.new-group').classList.remove('hide')
 })
+
+async function showGroupMessages(){
+    
+        console.log(curr_group)
+        const group = curr_group
+        try{
+            
+            const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}` , {
+                headers : {
+                    'auth-token':localStorage.getItem('token')
+                }
+            })
+            const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}` ,{
+                headers : {
+                    'auth-token':localStorage.getItem('token')
+                }
+            })
+            console.log(res)
+            console.log(res2)
+            messages.innerHTML =``
+            document.querySelector('.group-message h2').textContent = group.name
+            res.data.messages.forEach(message =>{
+                showMessage(message ,res.data.id , res2.data )
+            })
+            
+        }catch(e){
+            console.log(e)
+        }
+   
+}
