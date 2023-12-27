@@ -6,6 +6,21 @@ window.addEventListener('load' , renderElemets)
 
 async function renderElemets(){
     try{
+        if(!localStorage.getItem('token')){
+            window.location ='login.html'
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const id = urlParams.get('id');
+        if(id){
+            console.log("id present")
+            const group = await axios.get(`http://localhost:4000/group/join-group/${id}`,{
+                headers : {
+                    'auth-token' : localStorage.getItem('token')
+                }
+            })
+            showGroups(group.data.group)
+        }
         const res = await axios.get('http://localhost:4000/group/get-groups' ,{
             headers : {
                 'auth-token' : localStorage.getItem('token')
@@ -13,18 +28,31 @@ async function renderElemets(){
         })
         console.log(res)
         res.data.forEach(group => {
-            showGroups(group)
+            if(group.id != id)
+                showGroups(group)
         })
     }catch(e){
         console.log(e)
+        window.location = '/'
     }
 }
 
 function showGroups(group){
     const div = document.createElement('div')
+    
     div.textContent = group.name
     div.className= 'group-items'
     div.id = group.id
+    
+    const span = document.createElement('span')
+    span.textContent = '+'
+    div.appendChild(span)
+    span.onclick = (e)=>{
+        e.stopPropagation()
+        const link = `http://127.0.0.1:5500/?id=${group.id}`
+        navigator.clipboard.writeText(link)
+        console.log('clicked')
+    }
 
     div.onclick = async()=>{
         console.log(group.id)
@@ -42,9 +70,11 @@ function showGroups(group){
             console.log(res)
             console.log(res2)
             messages.innerHTML =``
+            document.querySelector('.group-message h2').textContent = group.name
             res.data.messages.forEach(message =>{
                 showMessage(message ,res.data.id , res2.data )
             })
+            
         }catch(e){
             console.log(e)
         }
@@ -135,7 +165,7 @@ function showMessage(data , id, users){
     messages.appendChild(div)
 }
 
-document.forms[0].addEventListener('submit' , sendMessage)
+// document.forms[0].addEventListener('submit' , sendMessage)
 
 async function sendMessage(e){
     try{
@@ -167,6 +197,10 @@ async function createNewGroup(e){
             }
         })
         console.log(group)
+        e.target.name.value = ''
+        showGroups(group.data.group)
+        
+        document.querySelector('.new-group').classList.add('hide')
     }catch(e){
         console.log(e)
     }

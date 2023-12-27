@@ -29,7 +29,7 @@ exports.joinGroup = async(req ,res)=>{
         const group = await Group.findByPk(groupId)
         if(group){
             const member = await group.addUser(req.user)
-            return res.json(member)
+            return res.json({member , group})
         }else{
             return res.status(404).json({msg :"Group does not exist"})
         }

@@ -28,6 +28,8 @@ h2{
 
 
 .group-items{
+    display: flex;
+  justify-content: space-between;
     background: #a0ffb157;
     font-size: large;
     margin: 8px 10px;
@@ -35,7 +37,20 @@ h2{
     cursor: pointer;
 
 }
+.group-items span:last-child {
+    order: 2;
+    background: white;
+    border-radius: 14px;
+    min-width: 1.8vw;
+    text-align: center;
 
+    &:active{
+        background-color: brown;
+        color: white;
+        outline: none;
+        user-select: none;
+    }
+  }
 .show-groups{
     max-height: 90vh;
     overflow-y: scroll;
@@ -109,4 +124,11 @@ h2{
     margin: 2px;
     padding: 5px 8px;
     border-radius: 4px;
+}
+.group-message  h2{
+    background: #cdbdbd;
+    cursor: pointer;
+}
+.group-message > div > span{
+    font-size: xxx-large;
 }
