@@ -1,35 +1,32 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
 
-h2{
-    text-align: center;
-}
 
-.display{
+.display {
     display: flex;
     flex-direction: row;
 
 }
 
-.hide{
-    display: none;
+.hide {
+    display: none !important;
 }
 
-.groups{
+.groups {
     min-width: 25vw;
     max-width: 25vw;
 }
 
-.group-message{
+.group-message {
     width: 74%;
 }
 
 
-.group-items{
+.group-items {
     display: flex;
-  justify-content: space-between;
+    justify-content: space-between;
     background: #a0ffb157;
     font-size: large;
     margin: 8px 10px;
@@ -37,6 +34,7 @@ h2{
     cursor: pointer;
 
 }
+
 .group-items span:last-child {
     order: 2;
     background: white;
@@ -44,24 +42,25 @@ h2{
     min-width: 1.8vw;
     text-align: center;
 
-    &:active{
+    &:active {
         background-color: brown;
         color: white;
         /* outline: none; */
         user-select: none;
     }
-  }
-.show-groups{
+}
+
+.show-groups {
     max-height: 90vh;
     overflow-y: scroll;
 
 }
 
-.group-items:hover{
+.group-items:hover {
     background: #98abbc8f;
 }
 
-.messages{
+.messages {
     min-height: 85vh;
     max-height: 85vh;
     margin: 10px 0;
@@ -72,7 +71,7 @@ h2{
 }
 
 
-.u-joined{
+.u-joined {
     background: darkgrey;
     padding: 10px;
     width: 40vw;
@@ -81,7 +80,8 @@ h2{
     text-align: center;
 
 }
-.o-joined{
+
+.o-joined {
     padding: 10px;
     width: 40vw;
     height: fit-content;
@@ -89,7 +89,8 @@ h2{
     text-align: center;
 
 }
-.u-message{
+
+.u-message {
     background: darkgrey;
     padding: 10px;
     width: 40vw;
@@ -98,13 +99,15 @@ h2{
     text-align: end;
 
 }
-.o-message{
+
+.o-message {
     padding: 10px;
     width: 40vw;
     height: fit-content;
     font-size: medium;
 }
-.send-messages > form {
+
+.send-messages>form {
     display: flex;
     gap: 0.2em;
     justify-content: center;
@@ -112,7 +115,7 @@ h2{
 
 }
 
-.send-messages > form > input{
+.send-messages>form>input {
     padding: 6px 10px;
     width: 48%;
     font-size: medium;
@@ -120,15 +123,51 @@ h2{
     border-radius: 7px;
 }
 
-.send-messages > form > button{
+.send-messages>form>button {
     margin: 2px;
     padding: 5px 8px;
     border-radius: 4px;
 }
-.group-message  h2{
-    background: #cdbdbd;
-    cursor: pointer;
-}
-.group-message > div > span{
+
+
+.group-message>div>span {
     font-size: xxx-large;
+}
+.show-users{
+    /* min-height: 85vh; */
+    max-height: 90vh;
+    overflow-y: scroll;
+}
+
+.user {
+    background: #f4ffbf;
+    font-size: x-large;
+    display: flex;
+    padding: 12px;
+    justify-content: center;
+    margin: 7px 0;
+    
+    &:hover{
+        background-color: #b9aeae;
+    }
+}
+
+.user span {
+    margin: 0 15px;
+    font-size: medium;
+    color: blue;
+    border-radius: 7px;
+    border: 3px px solid #9c1a1ade;
+    height: fit-content;
+
+}
+
+.header{
+    display: flex;
+    align-items: center;
+    height: 7vh;
+    background: #cdbdbd;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
 }

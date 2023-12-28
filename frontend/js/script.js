@@ -3,6 +3,7 @@ let rendered = false
 const groups = document.querySelector('.show-groups')
 window.addEventListener('load' , renderElemets)
 var curr_group =null
+const users = document.querySelector('.show-users')
 
 async function renderElemets(){
     try{
@@ -62,10 +63,10 @@ function showGroups(group){
     groups.appendChild(div)
 }
 
-setInterval(async()=>{
-    if(curr_group)
-        await showGroupMessages()
-}, 4000);
+// setInterval(async()=>{
+//     if(curr_group)
+//         await showGroupMessages()
+// }, 2000);
 // async function displayMessages(){
 //     try{
 //         if(groupId){
@@ -222,9 +223,47 @@ async function showGroupMessages(){
             res.data.messages.forEach(message =>{
                 showMessage(message ,res.data.id , res2.data )
             })
+            // console.log(typeof Array.from(res2.data))
+            users.innerHTML = ``
+
+            res2.data.forEach(user =>{
+                showUser(user)
+            })
+
             
         }catch(e){
             console.log(e)
         }
    
 }
+
+function showUser(user){
+    console.log(user)
+    const div = document.createElement('div')
+    div.textContent = user.name
+    div.className='user'
+
+    if(user.member.admin){
+        const span = document.createElement('span')
+        span.textContent = 'admin'
+        div.appendChild(span)
+    }
+    users.appendChild(div)
+}
+
+document.querySelector('.header').addEventListener('click',()=>{
+    const message = document.querySelector('.messages')
+    const sendMessages = document.querySelector('.send-messages')
+    const users = document.querySelector('.show-users')
+
+    if(users.classList.contains('hide')){
+        message.classList.add('hide')
+        sendMessages.classList.add('hide')
+        users.classList.remove('hide')
+    }else{
+        users.classList.add('hide')
+        message.classList.remove('hide')
+        sendMessages.classList.remove('hide')
+    }
+
+})
