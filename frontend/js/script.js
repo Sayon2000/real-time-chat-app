@@ -57,16 +57,20 @@ function showGroups(group){
 
     div.onclick = async()=>{
         curr_group = group
+        document.querySelector('.header').classList.remove('hide')
+        document.querySelector('.messages').classList.remove('hide')
+        document.querySelector('.send-messages').classList.remove('hide')
+        document.querySelector('.show-users').classList.add('hide')
         await showGroupMessages()
     }
 
     groups.appendChild(div)
 }
 
-// setInterval(async()=>{
-//     if(curr_group)
-//         await showGroupMessages()
-// }, 2000);
+setInterval(async()=>{
+    if(curr_group)
+        await showGroupMessages()
+}, 2000);
 // async function displayMessages(){
 //     try{
 //         if(groupId){
@@ -206,12 +210,20 @@ async function showGroupMessages(){
         const group = curr_group
         try{
             
-            const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}` , {
+            let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`) ) || []
+            let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
+            let mId=0
+            let uId =0 
+            if(final_messages.length > 0)
+                mId = final_messages[final_messages.length -1].id
+            if(final_users.length>0)
+                 uId = final_users[final_users.length -1].id
+            const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}` , {
                 headers : {
                     'auth-token':localStorage.getItem('token')
                 }
             })
-            const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}` ,{
+            const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}` ,{
                 headers : {
                     'auth-token':localStorage.getItem('token')
                 }
@@ -219,17 +231,20 @@ async function showGroupMessages(){
             console.log(res)
             console.log(res2)
             messages.innerHTML =``
+            final_messages = [...final_messages , ...res.data.messages]
             document.querySelector('.group-message h2').textContent = group.name
-            res.data.messages.forEach(message =>{
-                showMessage(message ,res.data.id , res2.data )
+            final_users = [...final_users , ...res2.data]
+            final_messages.forEach(message =>{
+                showMessage(message ,res.data.id , final_users )
             })
-            // console.log(typeof Array.from(res2.data))
             users.innerHTML = ``
 
-            res2.data.forEach(user =>{
+
+            final_users.forEach(user =>{
                 showUser(user)
             })
-
+            localStorage.setItem(`message-${group.id}` , JSON.stringify(final_messages))
+            localStorage.setItem(`user-${group.id}`,JSON.stringify(final_users))
             
         }catch(e){
             console.log(e)

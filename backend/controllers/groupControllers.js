@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Group  = require('../models/Group')
 
 exports.createNewGroup = async(req,res)=>{
@@ -43,12 +44,20 @@ exports.joinGroup = async(req ,res)=>{
 exports.getUsers = async(req,res)=>{
     try{    
         const groupId = req.params.groupId
+        const id = req.query.id || 0
         const groups = await req.user.getGroups({where : { id : groupId}
         })
         if(groups.length == 1 ){
             const group = groups[0]
             const users = await group.getUsers({
-                attributes : ['id','name']})
+            where : {
+                id : {
+                    [Op.gt] : id
+                }
+            },
+                attributes : ['id','name']
+            }
+                )
               return res.json(users)
             }else{
             return res.status(403).json({msg :"You are not part of the group"})
