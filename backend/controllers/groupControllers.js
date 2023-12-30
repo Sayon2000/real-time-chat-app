@@ -5,8 +5,8 @@ exports.createNewGroup = async(req,res)=>{
     try{
         const name = req.body.name;
         // console.log(req.user.name)
-       const group  =await Group.create({name : name , admin : true})
-       const member = await req.user.addGroup(group , {through : {admin : true}})
+       const group  =await Group.create({name : name })
+       const member = await req.user.addGroup(group , {through : {admin : true , creator : true}})
        return res.json({group , member})
     }catch(e){
         console.log(e)
@@ -67,5 +67,15 @@ exports.getUsers = async(req,res)=>{
         console.log(e)
         return res.status(500).json({success : false , msg :"Internal server error"})
     
+    }
+}
+
+
+exports.getOtherUsers = async(req,res)=>{
+    try{
+
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({msg :"Internal server error"})
     }
 }

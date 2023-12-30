@@ -12,6 +12,10 @@ const Member = sequelize.define('member' , {
     admin : {
         type : Sequelize.BOOLEAN,
         defaultValue : false
+    },
+    creator : {
+        type : Sequelize.BOOLEAN,
+        defaultValue : false
     }
 })
 

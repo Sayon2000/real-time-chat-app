@@ -34,7 +34,8 @@ async function renderElemets(){
         })
     }catch(e){
         console.log(e)
-        window.location = '/'
+        // localStorage.removeItem('token')
+        window.location = 'login.html'
     }
 }
 
@@ -129,12 +130,12 @@ setInterval(async()=>{
 //     }
 // }
 
-function showUser(user){
-    const div = document.createElement('div')
-    div.textContent = user.name +' joined'
-    div.className = 'o-joined'
-    messages.appendChild(div)
-}
+// function showUser(user){
+//     const div = document.createElement('div')
+//     div.textContent = user.name +' joined'
+//     div.className = 'o-joined'
+//     messages.appendChild(div)
+// }
 
 function showMessage(data , id, users){
     const div = document.createElement('div')

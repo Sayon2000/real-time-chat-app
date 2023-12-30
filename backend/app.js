@@ -34,11 +34,13 @@ Message.belongsTo(Member)
 const userRoutes = require('./routes/userRoutes')
 const messageRoutes = require('./routes/messageRoutes')
 const groupRoutes = require('./routes/groupRoutes')
+const adminRoutes = require('./routes/adminRoutes')
 
 
 app.use('/user' , userRoutes)
 app.use('/message' , messageRoutes)
 app.use('/group' , groupRoutes)
+app.use('/admin' , adminRoutes)
 
 
 sequelize
