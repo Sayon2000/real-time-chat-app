@@ -1,5 +1,7 @@
+const { Op } = require('sequelize');
 const Group = require('../models/Group');
 const Member = require('../models/Member');
+const User = require('../models/User');
 
 
 
@@ -45,7 +47,7 @@ exports.makeAdmin = async(req,res)=>{
 changeAdmin(true ,req,res)
 }
 
-exports.remoeAdmin = async(req,res)=>{
+exports.removeAdmin = async(req,res)=>{
 changeAdmin(false , req,res)
 }
 
@@ -85,6 +87,57 @@ async function changeAdmin(value , req,res){
     }else{
         return res.status(403).json({msg:"You don't have permission"})
     }
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({success : false , msg :"Internal server error"})
+    }
+}
+
+exports.showUser = async(req,res)=>{
+    try{
+        const groups = await req.user.getGroups({where : {id : req.params.groupId}})
+        // const currentUsers = await group[0]
+        const group = groups[0]
+        const member = group.member
+        const users = await group.getUsers()
+        const usersId = users.map(user => user.id)
+        if(member.admin){
+            const result = await User.findAll({
+                where :{
+                    id :{
+                        [Op.notIn] : usersId
+                    }
+                },
+                attributes : {
+                    exclude : ['password']
+                }
+            })
+            return res.json(result)
+        }else{
+            return res.json({msg :"You don't have the required permissions"})
+        }
+        
+
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({success : false , msg :"Internal server error"})
+    }
+}
+
+exports.addUser = async(req,res)=>{
+    try{
+        const groupId = req.params.groupId;
+        const groups = await req.user.getGroups({where : {id : groupId}})
+        const group = groups[0]
+        const member = group.member
+        const id = req.body.id
+        if(member.admin){
+            const user = await User.findByPk(id)
+            const newUser = await group.addUser(user)
+            return res.json({user : newUser , msg :"New User added successfully"})
+        }else{
+            return res.json({msg :"You don't have the required permissions"})
+        }
     }catch(e){
         console.log(e)
         return res.status(500).json({success : false , msg :"Internal server error"})
