@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>chat App</title>
     <link rel="stylesheet" href="/css/chat-app.css">
 </head>
+
 <body>
     <!-- <h2>Chat App</h2> -->
     <div class="display">
@@ -21,32 +23,41 @@
                 </div>
             </div>
             <div class="show-groups">
-                
+
             </div>
-   
+
         </div>
         <div class="group-message">
             <div class="hide header">
                 <h2>Chat App</h2>
-                
+
             </div>
 
             <div class="hide messages">
             </div>
             <div class="hide send-messages">
-                <form >
+                <form>
                     <input type="text" name="message" id="message" placeholder="Type your message here">
                     <button type="submit">send</button>
                 </form>
             </div>
+            <div class="users hide">
+                <button id="add-user-toggle-btn" class="">Add Users</button>
+                <div class="hide add-users">
+                    <label for="search">Enter email or name</label>
+                    <input type="text" name="search" id="search" placeholder="Enter email or name">
+                    <div class="display-users">
 
-            <div class="hide show-users">
+                    </div>
+                </div>
+                <div class="hide show-users">
 
+                </div>
             </div>
-
         </div>
     </div>
 </body>
 <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
 <script src="/js/script.js"></script>
+
 </html>

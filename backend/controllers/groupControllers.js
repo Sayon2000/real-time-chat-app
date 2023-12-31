@@ -55,7 +55,9 @@ exports.getUsers = async(req,res)=>{
                     [Op.gt] : id
                 }
             },
-                attributes : ['id','name']
+                attributes : {
+                    exclude : ['password']
+                }
             }
                 )
               return res.json(users)

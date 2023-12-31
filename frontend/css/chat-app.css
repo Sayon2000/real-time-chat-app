@@ -133,9 +133,16 @@
 .group-message>div>span {
     font-size: xxx-large;
 }
-.show-users{
+
+.show-users {
     /* min-height: 85vh; */
     max-height: 90vh;
+    overflow-y: scroll;
+}
+
+.add-users {
+    /* min-height: 85vh; */
+    max-height: 85vh;
     overflow-y: scroll;
 }
 
@@ -144,15 +151,34 @@
     font-size: x-large;
     display: flex;
     padding: 12px;
+    justify-content: space-between;
+    margin: 7px 0;
+
+    &:hover {
+        background-color: #b9aeae;
+    }
+}
+.curr_user {
+    background: #f4ffbf;
+    font-size: x-large;
+    display: flex;
+    padding: 12px;
     justify-content: center;
     margin: 7px 0;
-    
-    &:hover{
+
+    &:hover {
         background-color: #b9aeae;
     }
 }
 
-.user span {
+.add-user {
+    background: #f4ffbf;
+    font-size: x-large;
+    padding: 12px;
+    margin: 7px 0;
+}
+
+.admin span {
     margin: 0 15px;
     font-size: medium;
     color: blue;
@@ -162,7 +188,12 @@
 
 }
 
-.header{
+.user button {
+    margin: 0px 9px;
+    padding: 5px 5px;
+}
+
+.header {
     display: flex;
     align-items: center;
     height: 7vh;
