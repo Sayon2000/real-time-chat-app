@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-
+const path = require('path')
 
 require('dotenv').config()
 const app = express()
@@ -42,6 +42,7 @@ app.use('/message' , messageRoutes)
 app.use('/group' , groupRoutes)
 app.use('/admin' , adminRoutes)
 
+app.use(express.static(path.join('..' , 'frontend')))
 
 sequelize
 // .sync({force : true})
