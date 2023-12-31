@@ -16,14 +16,14 @@ async function renderElemets() {
         const id = urlParams.get('id');
         if (id) {
             console.log("id present")
-            const group = await axios.get(`http://localhost:4000/group/join-group/${id}`, {
+            const group = await axios.get(`http://3.27.133.80/group/join-group/${id}`, {
                 headers: {
                     'auth-token': localStorage.getItem('token')
                 }
             })
             showGroups(group.data.group)
         }
-        const res = await axios.get('http://localhost:4000/group/get-groups', {
+        const res = await axios.get('http://3.27.133.80/group/get-groups', {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
@@ -85,14 +85,14 @@ setInterval(async()=>{
 //         // }
 //         messages.innerHTML = ``
 
-// const p1 =  axios.get('http://localhost:4000/user/all-users' , {
+// const p1 =  axios.get('http://3.27.133.80/user/all-users' , {
 //     headers : {
 //         'auth-token' : localStorage.getItem('token')
 //     }
 
 // })
 // const last = messages.length == 0 ? 0 : messages[messages.length-1].id
-// const p2 =  axios.get(`http://localhost:4000/message/get-messages?id=${last}` , {
+// const p2 =  axios.get(`http://3.27.133.80/message/get-messages?id=${last}` , {
 //     headers : {
 //         'auth-token' : localStorage.getItem('token')
 //     }
@@ -165,7 +165,7 @@ async function sendMessage(e) {
             message: e.target.message.value,
             groupId
         }
-        const res = await axios.post('http://localhost:4000/message/add-message', data, {
+        const res = await axios.post('http://3.27.133.80/message/add-message', data, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
@@ -188,7 +188,7 @@ async function createNewGroup(e) {
     try {
         e.preventDefault()
         console.log(e.target.name.value)
-        const group = await axios.post('http://localhost:4000/group/create', { "name": e.target.name.value }, {
+        const group = await axios.post('http://3.27.133.80/group/create', { "name": e.target.name.value }, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
@@ -221,12 +221,12 @@ async function showGroupMessages() {
             mId = final_messages[final_messages.length - 1].id
         if (final_users.length > 0)
             uId = final_users[final_users.length - 1].id
-        const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}`, {
+        const res = await axios.get(`http://3.27.133.80/message/get-messages/${group.id}/?messageId=${mId}`, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
         })
-        const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}`, {
+        const res2 = await axios.get(`http://3.27.133.80/group/all-users/${group.id}/?id=${uId}`, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
@@ -249,7 +249,7 @@ async function showGroupMessages() {
         localStorage.setItem(`message-${group.id}`, JSON.stringify(final_messages))
         localStorage.setItem(`user-${group.id}`, JSON.stringify(final_users))
 
-        const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
+        const res3 = await axios.post(`http://3.27.133.80/admin/show-users/${group.id}`, null, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
@@ -296,7 +296,7 @@ function showUser(user) {
         let final_users = JSON.parse(localStorage.getItem(`user-${curr_group.id}`)) || []
         makeAdmin.onclick = async()=>{
             try{
-                const res = await axios.post(`http://localhost:4000/admin/make-admin/${curr_group.id}`,{"userId" : user.id} , {
+                const res = await axios.post(`http://3.27.133.80/admin/make-admin/${curr_group.id}`,{"userId" : user.id} , {
                     headers: {
                         'auth-token': localStorage.getItem('token')
                     }
@@ -320,7 +320,7 @@ function showUser(user) {
 
         removeAdmin.onclick = async()=>{
             try{
-                const res = await axios.post(`http://localhost:4000/admin/remove-admin/${curr_group.id}`,{"userId" : user.id} , {
+                const res = await axios.post(`http://3.27.133.80/admin/remove-admin/${curr_group.id}`,{"userId" : user.id} , {
                     headers: {
                         'auth-token': localStorage.getItem('token')
                     }
@@ -347,7 +347,7 @@ function showUser(user) {
 
         removeUser.onclick = async()=>{
             try{
-                const res = await axios.post(`http://localhost:4000/admin/remove-member/${curr_group.id}`,{"userId" : user.id} , {
+                const res = await axios.post(`http://3.27.133.80/admin/remove-member/${curr_group.id}`,{"userId" : user.id} , {
                     headers: {
                         'auth-token': localStorage.getItem('token')
                     }
@@ -426,7 +426,7 @@ function addUser(user) {
     btn.onclick = async () => {
         try {
             console.log(curr_group)
-            const res = await axios.post(`http://localhost:4000/admin/add-user/${curr_group.id}`, {
+            const res = await axios.post(`http://3.27.133.80/admin/add-user/${curr_group.id}`, {
                 id : user.id
             }, {
                 headers: {

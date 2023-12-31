@@ -14,7 +14,7 @@ form.addEventListener('submit' , async(e)=>{
             phone : e.target.phone.value,
             password : e.target.password.value
         }
-        const res = await axios.post('http://localhost:4000/user/create', data)
+        const res = await axios.post('http://3.27.133.80/user/create', data)
         console.log(res)
         if(res.status == 200){
             alert(res.data.msg)
