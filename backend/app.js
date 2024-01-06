@@ -2,14 +2,20 @@ const express = require('express')
 const cors = require('cors')
 
 
+
+
 require('dotenv').config()
 const app = express()
-
+const httpServer = require('http').createServer(app);
+const io = require('socket.io')(httpServer, {
+    cors: ['http://localhost:5500']
+});
 app.use(express.json())
 app.use(cors({
     origin : 'http://127.0.0.1:5500',
     methods : [' GET' ,'POST']
 }))
+
 
 const sequelize = require('./util/db')
 
@@ -36,6 +42,9 @@ const messageRoutes = require('./routes/messageRoutes')
 const groupRoutes = require('./routes/groupRoutes')
 const adminRoutes = require('./routes/adminRoutes')
 
+const messagesRoutes = require('./routes/messagesRoutes')
+const {socketAuthenticate} = require('./middlewares/auth')
+
 
 app.use('/user' , userRoutes)
 app.use('/message' , messageRoutes)
@@ -47,8 +56,19 @@ sequelize
 // .sync({force : true})
 .sync()
 .then(()=>{
+    const connection = (socket)=>{
+        
+            socket.use(async(packet,next)=>{
+                await socketAuthenticate(socket,next)
 
-    app.listen(4000)
+            })
+        
+        console.log(socket.id)
+        messagesRoutes(io,socket)
+    }
+
+    io.on('connection' , connection)
+    httpServer.listen(4000)
 }).catch(e => {
     console.log(e)
 })

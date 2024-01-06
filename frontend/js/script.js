@@ -1,3 +1,10 @@
+import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
+
+const socket = io('http://localhost:4000' , {
+    auth : {
+        token : localStorage.getItem('token')
+    }
+})
 const messages = document.querySelector('.messages')
 let rendered = false
 const groups = document.querySelector('.show-groups')
@@ -5,12 +12,16 @@ window.addEventListener('load', renderElemets)
 var curr_group = null
 const users = document.querySelector('.show-users')
 const displayUsers = document.querySelector('.display-users')
-
 async function renderElemets() {
     try {
         if (!localStorage.getItem('token')) {
             window.location = 'login.html'
         }
+
+        socket.on('connect', () => {
+            console.log(socket)
+        })
+
         const urlParams = new URLSearchParams(window.location.search);
 
         const id = urlParams.get('id');
@@ -69,10 +80,10 @@ function showGroups(group) {
     groups.appendChild(div)
 }
 
-setInterval(async()=>{
-    if(curr_group)
-        await showGroupMessages()
-}, 2000);
+// setInterval(async()=>{
+//     if(curr_group)
+//         await showGroupMessages()
+// }, 2000);
 
 // async function displayMessages(){
 //     try{
@@ -139,16 +150,27 @@ setInterval(async()=>{
 //     messages.appendChild(div)
 // }
 
-function showMessage(data, id, users) {
+socket.on('show-message', showMessage)
+
+function showMessage(data,) {
+    const id = curr_group.member.id
+    const users = localStorage.getItem(`user-${curr_group.id}`)
     const div = document.createElement('div')
     console.log(typeof users)
     if (id == data.memberId) {
         div.className = 'u-message'
         div.textContent = "You: " + data.message
     } else {
-        div.className = 'o-message'
         const user = users.find(user => data.memberId == user.member.id)
-        div.textContent = user.name + ": " + data.message
+        console.log(user)
+        if (user) {
+            div.className = 'o-message'
+            div.textContent = user.name + ": " + data.message
+
+        } else {
+            return;
+        }
+
 
     }
 
@@ -159,28 +181,42 @@ document.querySelector('.send-messages form').addEventListener('submit', sendMes
 
 async function sendMessage(e) {
     try {
-        const groupId = curr_group.id
+
         e.preventDefault()
+        const groupId = curr_group.id
         const data = {
             message: e.target.message.value,
             groupId
         }
-        const res = await axios.post('http://localhost:4000/message/add-message', data, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
+        socket.emit('message:send-message', data, () => {
+            console.log('test')
+            const div = document.createElement('div')
+            div.className = 'u-message'
+            div.textContent = "You: " + data.message
+            messages.appendChild(div)
+            e.target.message.value = ''
         })
-        console.log(res)
-        const div = document.createElement('div')
-        div.className = 'u-message'
-        div.textContent = "You: " + data.message
-        messages.appendChild(div)
-        e.target.message.value = ''
+        // const res = await axios.post('http://localhost:4000/message/add-message', data, {
+        //     headers: {
+        //         'auth-token': localStorage.getItem('token')
+        //     }
+        // })
+        // console.log(res)
+
     } catch (e) {
         console.log(e)
     }
 
 }
+
+socket.on('message:recieve-message', (data ,username) => {
+    const div = document.createElement('div')
+    div.className = 'o-message'
+    div.textContent = username +": "+data
+    messages.appendChild(div)
+
+
+})
 
 document.getElementById('create-new-group').addEventListener('submit', createNewGroup)
 
@@ -211,57 +247,58 @@ async function showGroupMessages() {
 
     console.log(curr_group)
     const group = curr_group
-    try {
+    socket.emit('join-room', group.id)
+    // try {
 
-        let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
-        let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
-        let mId = 0
-        let uId = 0
-        if (final_messages.length > 0)
-            mId = final_messages[final_messages.length - 1].id
-        if (final_users.length > 0)
-            uId = final_users[final_users.length - 1].id
-        const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}`, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
-        })
-        const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}`, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
-        })
-        console.log(res)
-        console.log(res2)
-        messages.innerHTML = ``
-        final_messages = [...final_messages, ...res.data.messages]
-        document.querySelector('.group-message h2').textContent = group.name
-        final_users = [...final_users, ...res2.data]
-        final_messages.forEach(message => {
-            showMessage(message, res.data.id, final_users)
-        })
-        users.innerHTML = ``
+    //     let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
+    //     let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
+    //     let mId = 0
+    //     let uId = 0
+    //     if (final_messages.length > 0)
+    //         mId = final_messages[final_messages.length - 1].id
+    //     if (final_users.length > 0)
+    //         uId = final_users[final_users.length - 1].id
+    //     const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}`, {
+    //         headers: {
+    //             'auth-token': localStorage.getItem('token')
+    //         }
+    //     })
+    //     const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}`, {
+    //         headers: {
+    //             'auth-token': localStorage.getItem('token')
+    //         }
+    //     })
+    //     console.log(res)
+    //     console.log(res2)
+    //     messages.innerHTML = ``
+    //     final_messages = [...final_messages, ...res.data.messages]
+    //     document.querySelector('.group-message h2').textContent = group.name
+    //     final_users = [...final_users, ...res2.data]
+    //     final_messages.forEach(message => {
+    //         showMessage(message, res.data.id, final_users)
+    //     })
+    //     users.innerHTML = ``
 
 
-        final_users.forEach(user => {
-            showUser(user)
-        })
-        localStorage.setItem(`message-${group.id}`, JSON.stringify(final_messages))
-        localStorage.setItem(`user-${group.id}`, JSON.stringify(final_users))
+    //     final_users.forEach(user => {
+    //         showUser(user)
+    //     })
+    //     localStorage.setItem(`message-${group.id}`, JSON.stringify(final_messages))
+    //     localStorage.setItem(`user-${group.id}`, JSON.stringify(final_users))
 
-        const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
-        })
-        console.log(res3)
-        displayUsers.innerHTML = ``
-        res3.data.forEach(user => {
-            addUser(user)
-        })
-    } catch (e) {
-        console.log(e)
-    }
+    //     const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
+    //         headers: {
+    //             'auth-token': localStorage.getItem('token')
+    //         }
+    //     })
+    //     console.log(res3)
+    //     displayUsers.innerHTML = ``
+    //     res3.data.forEach(user => {
+    //         addUser(user)
+    //     })
+    // } catch (e) {
+    //     console.log(e)
+    // }
 
 }
 
@@ -273,30 +310,30 @@ function showUser(user) {
     div.textContent = user.name
 
     div.className = 'curr_user'
-    
-    
+
+
     if (user.member.admin) {
         const span = document.createElement('span')
         div.className = 'curr_user admin'
         span.textContent = 'admin'
         div.appendChild(span)
     }
-    if(user.member.id != member.id && member.admin){
+    if (user.member.id != member.id && member.admin) {
         const btns = document.createElement('div')
-        console.log(user.member.id +" : " + member.id)
+        console.log(user.member.id + " : " + member.id)
         const makeAdmin = document.createElement('button')
         makeAdmin.textContent = 'Make Admin'
 
         const removeAdmin = document.createElement('button')
         removeAdmin.textContent = 'Remove Admin'
-        if(user.member.admin)
+        if (user.member.admin)
             makeAdmin.classList.add('hide')
         else
             removeAdmin.classList.add('hide')
         let final_users = JSON.parse(localStorage.getItem(`user-${curr_group.id}`)) || []
-        makeAdmin.onclick = async()=>{
-            try{
-                const res = await axios.post(`http://localhost:4000/admin/make-admin/${curr_group.id}`,{"userId" : user.id} , {
+        makeAdmin.onclick = async () => {
+            try {
+                const res = await axios.post(`http://localhost:4000/admin/make-admin/${curr_group.id}`, { "userId": user.id }, {
                     headers: {
                         'auth-token': localStorage.getItem('token')
                     }
@@ -304,23 +341,22 @@ function showUser(user) {
                 final_users = final_users.map(elem => {
                     console.log(elem)
                     // console.log(elem.userId + " : " + user.id)
-                    if(elem.member.userId == user.id)
-                       {
+                    if (elem.member.userId == user.id) {
                         elem.member.admin = true
-                       }
-                       return elem
+                    }
+                    return elem
                 })
-                localStorage.setItem(`user-${curr_group.id}`,JSON.stringify(final_users))
+                localStorage.setItem(`user-${curr_group.id}`, JSON.stringify(final_users))
                 console.log(res)
-            }catch(e){
+            } catch (e) {
                 console.log(e)
             }
         }
 
 
-        removeAdmin.onclick = async()=>{
-            try{
-                const res = await axios.post(`http://localhost:4000/admin/remove-admin/${curr_group.id}`,{"userId" : user.id} , {
+        removeAdmin.onclick = async () => {
+            try {
+                const res = await axios.post(`http://localhost:4000/admin/remove-admin/${curr_group.id}`, { "userId": user.id }, {
                     headers: {
                         'auth-token': localStorage.getItem('token')
                     }
@@ -329,14 +365,13 @@ function showUser(user) {
                 final_users = final_users.map(elem => {
                     console.log(elem)
                     // console.log(elem.userId + " : " + user.id)
-                    if(elem.member.userId == user.id)
-                       {
+                    if (elem.member.userId == user.id) {
                         elem.member.admin = false
-                       }
-                       return elem
+                    }
+                    return elem
                 })
-                localStorage.setItem(`user-${curr_group.id}`,JSON.stringify(final_users))
-            }catch(e){
+                localStorage.setItem(`user-${curr_group.id}`, JSON.stringify(final_users))
+            } catch (e) {
                 console.log(e)
             }
         }
@@ -345,9 +380,9 @@ function showUser(user) {
         const removeUser = document.createElement('button')
         removeUser.textContent = 'Remove User'
 
-        removeUser.onclick = async()=>{
-            try{
-                const res = await axios.post(`http://localhost:4000/admin/remove-member/${curr_group.id}`,{"userId" : user.id} , {
+        removeUser.onclick = async () => {
+            try {
+                const res = await axios.post(`http://localhost:4000/admin/remove-member/${curr_group.id}`, { "userId": user.id }, {
                     headers: {
                         'auth-token': localStorage.getItem('token')
                     }
@@ -355,13 +390,13 @@ function showUser(user) {
                 final_users = final_users.filter(elem => {
                     console.log(elem)
                     // console.log(elem.userId + " : " + user.id)
-                    if(elem.member.userId != user.id)
-                       return elem
+                    if (elem.member.userId != user.id)
+                        return elem
                 })
-                localStorage.setItem(`user-${curr_group.id}`,JSON.stringify(final_users))
+                localStorage.setItem(`user-${curr_group.id}`, JSON.stringify(final_users))
                 addUser(user)
                 users.removeChild(div)
-            }catch(e){
+            } catch (e) {
                 console.log(e)
             }
         }
@@ -405,11 +440,11 @@ document.getElementById('add-user-toggle-btn').addEventListener('click', () => {
     if (users.classList.contains('hide')) {
         users.classList.remove('hide')
         addUsers.classList.add('hide')
-        document.getElementById('add-user-toggle-btn').textContent='Add Users'
+        document.getElementById('add-user-toggle-btn').textContent = 'Add Users'
     } else {
         users.classList.add('hide')
         addUsers.classList.remove('hide')
-        document.getElementById('add-user-toggle-btn').textContent='Show Users'
+        document.getElementById('add-user-toggle-btn').textContent = 'Show Users'
     }
 })
 
@@ -427,14 +462,17 @@ function addUser(user) {
         try {
             console.log(curr_group)
             const res = await axios.post(`http://localhost:4000/admin/add-user/${curr_group.id}`, {
-                id : user.id
+                id: user.id
             }, {
                 headers: {
                     'auth-token': localStorage.getItem('token')
                 }
             })
+            console.log(res)
             displayUsers.removeChild(div)
-            showUser(user)
+            const show_user = res.data.user
+            show_user.member = res.data.user[0]
+            showUser(show_user)
         } catch (e) {
             console.log(e)
         }
@@ -446,10 +484,10 @@ function addUser(user) {
     displayUsers.appendChild(div)
 }
 
-document.getElementById('search').addEventListener('keyup' , (e)=>{
+document.getElementById('search').addEventListener('keyup', (e) => {
     const text = e.target.value
-    Array.from(displayUsers.children).forEach(user =>{
-        if(user.textContent.indexOf(text) == -1)
+    Array.from(displayUsers.children).forEach(user => {
+        if (user.textContent.indexOf(text) == -1)
             user.classList.add('hide')
         else
             user.classList.remove('hide')
