@@ -152,9 +152,9 @@ function showGroups(group) {
 
 socket.on('show-message', showMessage)
 
-function showMessage(data,) {
+function showMessage(data,users) {
     const id = curr_group.member.id
-    const users = localStorage.getItem(`user-${curr_group.id}`)
+    // const users = localStorage.getItem(`user-${curr_group.id}`)
     const div = document.createElement('div')
     console.log(typeof users)
     if (id == data.memberId) {
@@ -245,10 +245,32 @@ document.getElementById('crete-grp').addEventListener('click', () => {
 
 async function showGroupMessages() {
 
+    try {
     console.log(curr_group)
     const group = curr_group
-    socket.emit('join-room', group.id)
-    // try {
+    socket.emit('join-room', group.id , (groupMessages ,id, groupUsers)=>{
+        messages.innerHTML = ``
+        document.querySelector('.group-message h2').textContent = group.name
+        groupMessages.forEach(message => {
+            console.log('hii')
+            showMessage(message,  groupUsers)
+        })
+        users.innerHTML = ``
+        groupUsers.forEach(user => {
+                    showUser(user)
+                })
+
+    })
+         const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
+            headers: {
+                'auth-token': localStorage.getItem('token')
+            }
+        })
+        console.log(res3)
+        displayUsers.innerHTML = ``
+        res3.data.forEach(user => {
+            addUser(user)
+        })
 
     //     let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
     //     let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
@@ -296,9 +318,9 @@ async function showGroupMessages() {
     //     res3.data.forEach(user => {
     //         addUser(user)
     //     })
-    // } catch (e) {
-    //     console.log(e)
-    // }
+    } catch (e) {
+        console.log(e)
+    }
 
 }
 

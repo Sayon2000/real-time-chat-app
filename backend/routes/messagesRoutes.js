@@ -4,8 +4,8 @@ const User = require('../models/User');
 const Group = require('../models/Group');
 const Member = require('../models/Member');
 
-module.exports = (io,socket)=>{
-    const addMessage = async(data , cb)=>{
+module.exports = (io, socket) => {
+    const addMessage = async (data, cb) => {
         console.log('add message')
         console.log(data)
 
@@ -16,17 +16,47 @@ module.exports = (io,socket)=>{
 
         const user = await group.getUsers({ where: { id: socket.user.id } })
         const member = user[0].member
-       
+
 
         const result = await member.createMessage({ message, groupId })
-        socket.to(data.groupId).emit('message:recieve-message' ,data.message,socket.user.name )
+        socket.to(data.groupId).emit('message:recieve-message', data.message, socket.user.name)
         console.log(socket.user)
-        cb()
+
+
+
+        await cb()
     }
 
-    socket.on('join-room' , (groupId)=>{
+    socket.on('join-room', async(groupId , cb) => {
+       
+        const group = await Group.findByPk(groupId)
+
+        const user = await group.getUsers({ where: { id: socket.user.id } })
+        const member = user[0].member
+
         socket.join(groupId)
-        
-    })  
-    socket.on('message:send-message' , addMessage)
+        const messages = await group.getMessages({
+            // where: {
+            //     id: {
+            //         [Op.gt]: messageId
+            //     }
+            // }
+        });
+       
+        const users = await group.getUsers({
+            // where : {
+            //     // id : {
+            //     //     [Op.gt] : id
+            //     // }
+            // },
+            attributes: {
+                exclude: ['password']
+            }
+        }
+        )
+   
+        await cb(messages, member.id, users)
+
+    })
+    socket.on('message:send-message', addMessage)
 }
