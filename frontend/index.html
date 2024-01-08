@@ -36,8 +36,17 @@
             <div class="hide messages">
             </div>
             <div class="hide send-messages">
-                <form>
-                    <input type="text" name="message" id="message" placeholder="Type your message here">
+                <label class="switch">
+                    <input type="checkbox" id="toggleInput">
+                    <span class="slider round"></span>
+                  </label>
+                  
+                <form id="messsage">
+                    <input type="text" name="message" id="message" placeholder="Type your message here" required oninvalid="this.setCustomValidity('Enter message')" oninput="setCustomValidity('')">
+                    <button type="submit">send</button>
+                </form>
+                <form id="files" class="hide" enctype="multipart/form-data">
+                    <input type="file" name="file" id="file" required>
                     <button type="submit">send</button>
                 </form>
             </div>
