@@ -65,7 +65,7 @@ exports.uploadFile = async(req,res)=>{
         const user = await group.getUsers({ where: { id: req.user.id } })
         const member = user[0].member
 
-        const message = await member.createMessage({message : data.Location , type : mimeType})
+        const message = await member.createMessage({message : data.Location , type : mimeType , groupId})
         return res.json(message)
     }catch(e){
         console.log(e)

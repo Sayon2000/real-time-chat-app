@@ -51,7 +51,7 @@ async function renderElemets() {
     }
 }
 
-function scrollToBottom(){
+function scrollToBottom() {
     const element = document.querySelector('.messages')
     element.scrollTop = element.scrollHeight
 }
@@ -85,10 +85,10 @@ function showGroups(group) {
     groups.appendChild(div)
 }
 
-// setInterval(async()=>{
-//     if(curr_group)
-//         await showGroupMessages()
-// }, 2000);
+setInterval(async()=>{
+    if(curr_group)
+        await showGroupMessages()
+}, 1000);
 
 
 
@@ -212,10 +212,11 @@ async function sendMessage(e) {
         })
         console.log(res)
         const div = document.createElement('div')
-            div.className = 'u-message'
-            div.textContent = "You: " + data.message
-            messages.appendChild(div)
-            e.target.message.value = ''
+        div.className = 'u-message'
+        div.textContent = "You: " + data.message
+        messages.appendChild(div)
+        e.target.message.value = ''
+        scrollToBottom()
 
     } catch (e) {
         console.log(e)
@@ -287,58 +288,102 @@ async function showGroupMessages() {
         //     addUser(user)
         // })
 
-            let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
-            let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
-            let mId = 0
-            let uId = 0
-            if (final_messages.length > 0)
-                mId = final_messages[final_messages.length - 1].id
-            if (final_users.length > 0)
-                uId = final_users[final_users.length - 1].id
-            const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}`, {
-                headers: {
-                    'auth-token': localStorage.getItem('token')
-                }
-            })
-            const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}`, {
-                headers: {
-                    'auth-token': localStorage.getItem('token')
-                }
-            })
-            console.log(res)
-            console.log(res2)
-            messages.innerHTML = ``
-            final_messages = [...final_messages, ...res.data.messages]
-            document.querySelector('.group-message h2').textContent = group.name
-            final_users = [...final_users, ...res2.data]
-            final_messages.forEach(message => {
+        let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
+        let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
+        let mId = 0
+        let uId = 0
+        if (final_messages.length > 0)
+            mId = final_messages[final_messages.length - 1].id
+        if (final_users.length > 0)
+            uId = final_users[final_users.length - 1].id
+        const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}`, {
+            headers: {
+                'auth-token': localStorage.getItem('token')
+            }
+        })
+        const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}`, {
+            headers: {
+                'auth-token': localStorage.getItem('token')
+            }
+        })
+        console.log(res)
+        console.log(res2)
+        messages.innerHTML = ``
+        final_messages = [...final_messages, ...res.data.messages]
+        document.querySelector('.group-message h2').textContent = group.name
+        final_users = [...final_users, ...res2.data]
+        console.log(final_messages)
+        final_messages.forEach(message => {
+            if (message.type == 'text')
                 showMessage(message, final_users)
-            })
-            scrollToBottom()
-            users.innerHTML = ``
+            else
+                showFiles(message, final_users)
+
+        })
+        scrollToBottom()
+        users.innerHTML = ``
 
 
-            final_users.forEach(user => {
-                showUser(user)
-            })
-            localStorage.setItem(`message-${group.id}`, JSON.stringify(final_messages))
-            localStorage.setItem(`user-${group.id}`, JSON.stringify(final_users))
+        final_users.forEach(user => {
+            showUser(user)
+        })
+        localStorage.setItem(`message-${group.id}`, JSON.stringify(final_messages))
+        localStorage.setItem(`user-${group.id}`, JSON.stringify(final_users))
 
-            const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
-                headers: {
-                    'auth-token': localStorage.getItem('token')
-                }
-            })
-            console.log(res3)
-            displayUsers.innerHTML = ``
-            res3.data.forEach(user => {
-                addUser(user)
-            })
+        const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
+            headers: {
+                'auth-token': localStorage.getItem('token')
+            }
+        })
+        console.log(res3)
+        displayUsers.innerHTML = ``
+        res3.data.forEach(user => {
+            addUser(user)
+        })
     } catch (e) {
         console.log(e)
     }
 
 }
+
+
+function showFiles(data, users) {
+    const id = curr_group.member.id
+    // const users = localStorage.getItem(`user-${curr_group.id}`)
+    const div = document.createElement('div')
+    console.log(typeof users)
+    if (id == data.memberId) {
+        div.className = 'u-message u-multi'
+        div.textContent = "You"
+    } else {
+        const user = users.find(user => data.memberId == user.member.id)
+        console.log(user)
+        if (user) {
+            div.className = 'o-message o-multi'
+            div.textContent = user.name
+
+        } else {
+            return;
+        }
+
+
+    }
+    if (data.type.startsWith('image')) {
+        const img = document.createElement('img')
+        img.src = data.message
+        div.appendChild(img)
+    } else if (data.type.startsWith('video')) {
+        const video = document.createElement('video')
+        const source = document.createElement('source')
+        source.src = data.message
+        video.appendChild(source)
+        video.controls = true
+        div.appendChild(video)
+    }
+
+    messages.appendChild(div)
+}
+
 
 function showUser(user) {
     const member = curr_group.member
@@ -532,35 +577,54 @@ document.getElementById('search').addEventListener('keyup', (e) => {
     })
 })
 
-document.getElementById('toggleInput').addEventListener('click' , (e)=>{
+document.getElementById('toggleInput').addEventListener('click', (e) => {
     console.log(e.target.checked)
-    if(e.target.checked){
+    if (e.target.checked) {
         document.getElementById('messsage').classList.add('hide')
         document.getElementById('files').classList.remove('hide')
-    }else{
+    } else {
         document.getElementById('files').classList.add('hide')
         document.getElementById('messsage').classList.remove('hide')
 
     }
 })
 
-document.getElementById('files').addEventListener('submit' ,async (e)=>{
-    try{
+document.getElementById('files').addEventListener('submit', async (e) => {
+    try {
         const group = curr_group
         e.preventDefault()
         console.log('clicked')
         // console.log(e.target.file.files) 
         const formData = new FormData(document.getElementById('files'))
 
-        const res=  await axios.post(`http://localhost:4000/message/upload-file/${group.id}`, formData, {
+        const res = await axios.post(`http://localhost:4000/message/upload-file/${group.id}`, formData, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
         })
         console.log(res)
-    }catch(e){
+        const div = document.createElement('div')
+        div.className = 'u-message u-multi'
+        div.textContent = "You"
+        const data = res.data
+        if (data.type.startsWith('image')) {
+            const img = document.createElement('img')
+            img.src = data.message
+            div.appendChild(img)
+        } else if (data.type.startsWith('video')) {
+            const video = document.createElement('video')
+            const source = document.createElement('source')
+            source.src = data.message
+            video.appendChild(source)
+            video.controls = true
+            div.appendChild(video)
+        }
+
+        messages.appendChild(div)
+        document.getElementById('file').value =''
+    } catch (e) {
         console.log(e)
     }
 
-    
+
 })

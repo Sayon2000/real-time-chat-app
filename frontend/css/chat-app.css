@@ -268,3 +268,25 @@
   .slider.round {
     border-radius: 34px;
   }
+
+  img {
+    width: 28vw;
+  }
+
+  video{
+    width: 30vw;
+  }
+
+  .u-multi{
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    font-weight: 800;
+    font-size: large;
+}
+
+.o-multi{
+    display: flex;
+    font-weight: 800;
+    font-size: large;
+}
