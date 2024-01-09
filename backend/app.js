@@ -23,7 +23,9 @@ const User = require('./models/User')
 const Message = require('./models/Message')
 const Group = require('./models/Group')
 const Member = require('./models/Member')
+const cronJob = require('./util/cron')
 
+// cronJob.start()
 
 
 
