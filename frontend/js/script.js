@@ -90,10 +90,10 @@ function showGroups(group) {
     groups.appendChild(div)
 }
 
-setInterval(async()=>{
-    if(curr_group)
-        await showGroupMessages()
-}, 1000);
+// setInterval(async()=>{
+//     if(curr_group)
+//         await showGroupMessages()
+// }, 1000);
 
 
 
@@ -325,7 +325,7 @@ async function showGroupMessages() {
                 showFiles(message, final_users)
 
         })
-        scrollToBottom()
+        // scrollToBottom()
         users.innerHTML = ``
 
 

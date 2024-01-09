@@ -1,6 +1,6 @@
 const {CronJob} = require('cron')
 
-const Archieved = require('../models/Archieved')
+const Archieved = require('../models/ArchievedMessage')
 const Message = require('../models/Message');
 const { Op } = require('sequelize');
 
