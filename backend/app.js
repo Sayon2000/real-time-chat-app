@@ -17,13 +17,13 @@ app.use(cors({
 }))
 
 
-const sequelize = require('./util/db')
+const sequelize = require('./utils/db')
 
 const User = require('./models/User')
 const Message = require('./models/Message')
 const Group = require('./models/Group')
 const Member = require('./models/Member')
-const cronJob = require('./util/cron')
+const cronJob = require('./utils/cron')
 
 // cronJob.start()
 

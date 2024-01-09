@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 
-const sequelize = require('../util/db')
+const sequelize = require('../utils/db')
 
 const archieved = sequelize.define('archieved' , {
     id : {

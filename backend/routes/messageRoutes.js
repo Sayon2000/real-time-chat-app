@@ -4,7 +4,7 @@ const router = express.Router()
 
 const {auth} = require('../middlewares/auth')
 const messageControllers = require('../controllers/messageControllers')
-const upload = require('../util/multer')
+const upload = require('../utils/multer')
 
 
 router.post('/add-message' , auth , messageControllers.addMessage)

@@ -75,6 +75,11 @@ function showGroups(group) {
 
     div.onclick = async () => {
         curr_group = group
+        if(curr_group.member.admin){
+            document.getElementById('add-user-toggle-btn').classList.remove('hide')
+        }else{
+            document.getElementById('add-user-toggle-btn').classList.add('hide')
+        }
         document.querySelector('.header').classList.remove('hide')
         document.querySelector('.messages').classList.remove('hide')
         document.querySelector('.send-messages').classList.remove('hide')
@@ -85,10 +90,10 @@ function showGroups(group) {
     groups.appendChild(div)
 }
 
-// setInterval(async()=>{
-//     if(curr_group)
-//         await showGroupMessages()
-// }, 1000);
+setInterval(async()=>{
+    if(curr_group)
+        await showGroupMessages()
+}, 1000);
 
 
 
@@ -246,7 +251,7 @@ async function createNewGroup(e) {
         })
         console.log(group)
         e.target.name.value = ''
-        showGroups(group.data.group)
+        showGroups(group.data.group)    
 
         document.querySelector('.new-group').classList.add('hide')
     } catch (e) {
@@ -499,7 +504,7 @@ document.querySelector('.header').addEventListener('click', () => {
     const users = document.querySelector('.show-users')
     const divUsers = document.querySelector('.users')
     const addUser = document.querySelector('.add-users')
-
+    
     addUser.classList.add('hide')
     if (users.classList.contains('hide')) {
         message.classList.add('hide')
@@ -544,6 +549,7 @@ function addUser(user) {
     btn.onclick = async () => {
         try {
             console.log(curr_group)
+ 
             const res = await axios.post(`http://localhost:4000/admin/add-user/${curr_group.id}`, {
                 id: user.id
             }, {
