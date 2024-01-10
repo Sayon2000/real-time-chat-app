@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const Group  = require('../models/Group')
+const User  = require('../models/User')
 
 exports.createNewGroup = async(req,res)=>{
     try{
@@ -7,10 +8,15 @@ exports.createNewGroup = async(req,res)=>{
         // console.log(req.user.name)
        const group  =await Group.create({name : name })
        const member = await req.user.addGroup(group , {through : {admin : true , creator : true}})
+       const selectedUsers = req.body.selectedUsers
+       const users = await User.findAll({where :{
+        id : selectedUsers
+       }})
+       const addedUsers = await group.addUsers(selectedUsers)
        
        const result = group.toJSON()
        result.member = member
-       return res.json({group : result , member})   
+       return res.json({group : result , member , addedUsers})   
     }catch(e){
         console.log(e)
         return res.status(500).json({success : false , msg :"Internal server error"})
@@ -78,7 +84,18 @@ exports.getUsers = async(req,res)=>{
 
 exports.getOtherUsers = async(req,res)=>{
     try{
+        const users = await User.findAll({
+            where : {
+                id : {
+                    [Op.ne] : req.user.id
+                }
 
+            },
+            attributes : {
+                exclude : ['password']
+            }
+        })
+        return res.json(users)
     }catch(e){
         console.log(e)
         return res.status(500).json({msg :"Internal server error"})

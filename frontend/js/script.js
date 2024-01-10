@@ -12,6 +12,7 @@ window.addEventListener('load', renderElemets)
 var curr_group = null
 const users = document.querySelector('.show-users')
 const displayUsers = document.querySelector('.display-users')
+var otherUsers = null
 async function renderElemets() {
     try {
         if (!localStorage.getItem('token')) {
@@ -244,23 +245,75 @@ async function createNewGroup(e) {
     try {
         e.preventDefault()
         console.log(e.target.name.value)
-        const group = await axios.post('http://localhost:4000/group/create', { "name": e.target.name.value }, {
+        const selectedUsers = []
+        otherUsers.forEach(user => {
+            if(document.getElementById(user.id).checked){
+                console.log(user.name)
+                selectedUsers.push(user.id)
+            }
+        })
+        const group = await axios.post('http://localhost:4000/group/create', { "name": e.target.name.value ,selectedUsers}, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
         })
+
+        console.log(selectedUsers)
+
         console.log(group)
         e.target.name.value = ''
         showGroups(group.data.group)    
 
         document.querySelector('.new-group').classList.add('hide')
+
+        document.querySelector('#create-grp').textContent = 'Create Group'
+        const addUsers = document.querySelector('.show-add-users')
+        document.querySelector('.show-groups').classList.remove('hide')
+        addUsers.classList.add('hide')
     } catch (e) {
         console.log(e)
     }
 }
 
-document.getElementById('crete-grp').addEventListener('click', () => {
+document.getElementById('create-grp').addEventListener('click', async() => {if(document.querySelector('.new-group').classList.contains('hide')){
     document.querySelector('.new-group').classList.remove('hide')
+    const res = await axios.get('http://localhost:4000/group/other-users' , {
+        headers: {
+            'auth-token': localStorage.getItem('token')
+        }
+    })
+    console.log(res)
+    const addUsers = document.querySelector('.show-add-users')
+    document.querySelector('.show-groups').classList.add('hide')
+    addUsers.classList.remove('hide')
+    addUsers.innerHTML = ``
+    otherUsers = res.data
+    res.data.forEach(user =>{
+        console.log(user)
+        const div = document.createElement('div')
+       
+        const label = document.createElement('label')
+        label.for = user.id
+        label.textContent = user.name
+
+        const input = document.createElement('input')
+        input.id=user.id
+        input.name=user.id
+        input.type = 'checkbox'
+
+        div.appendChild(label)
+        div.appendChild(input)
+
+        addUsers.appendChild(div)
+    })
+    document.querySelector('#create-grp').textContent = 'Back'
+}else{
+    document.querySelector('#create-grp').textContent = 'Create Group'
+    document.querySelector('.new-group').classList.add('hide')
+    const addUsers = document.querySelector('.show-add-users')
+    document.querySelector('.show-groups').classList.remove('hide')
+    addUsers.classList.add('hide')
+}
 })
 
 async function showGroupMessages() {
