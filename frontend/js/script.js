@@ -1,10 +1,10 @@
-// import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
+import { io } from "https://cdn.socket.io/4.7.2/socket.io.esm.min.js";
 
-// const socket = io('http://localhost:4000', {
-//     auth: {
-//         token: localStorage.getItem('token')
-//     }
-// })
+const socket = io('http://localhost:4000', {
+    auth: {
+        token: localStorage.getItem('token')
+    }
+})
 const messages = document.querySelector('.messages')
 let rendered = false
 const groups = document.querySelector('.show-groups')
@@ -19,9 +19,9 @@ async function renderElemets() {
             window.location = 'login.html'
         }
 
-        // socket.on('connect', () => {
-        //     console.log(socket)
-        // })
+        socket.on('connect', () => {
+            console.log(socket)
+        })
 
         const urlParams = new URLSearchParams(window.location.search);
 
@@ -86,6 +86,7 @@ function showGroups(group) {
         document.querySelector('.send-messages').classList.remove('hide')
         document.querySelector('.show-users').classList.add('hide')
         await showGroupMessages()
+        document.querySelector('.users').classList.add('hide')
     }
 
     groups.appendChild(div)
@@ -202,27 +203,27 @@ async function sendMessage(e) {
             message: e.target.message.value,
             groupId
         }
-        // socket.emit('message:send-message', data, () => {
-        //     console.log('test')
-        //     const div = document.createElement('div')
-        //     div.className = 'u-message'
-        //     div.textContent = "You: " + data.message
-        //     messages.appendChild(div)
-        //     e.target.message.value = ''
-        //     scrollToBottom()
-        // })
-        const res = await axios.post('http://localhost:4000/message/add-message', data, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
+        socket.emit('message:send-message', data, () => {
+            console.log('test')
+            const div = document.createElement('div')
+            div.className = 'u-message'
+            div.textContent = "You: " + data.message
+            messages.appendChild(div)
+            e.target.message.value = ''
+            scrollToBottom()
         })
-        console.log(res)
-        const div = document.createElement('div')
-        div.className = 'u-message'
-        div.textContent = "You: " + data.message
-        messages.appendChild(div)
-        e.target.message.value = ''
-        scrollToBottom()
+        // const res = await axios.post('http://localhost:4000/message/add-message', data, {
+        //     headers: {
+        //         'auth-token': localStorage.getItem('token')
+        //     }
+        // })
+        // console.log(res)
+        // const div = document.createElement('div')
+        // div.className = 'u-message'
+        // div.textContent = "You: " + data.message
+        // messages.appendChild(div)
+        // e.target.message.value = ''
+        // scrollToBottom()
 
     } catch (e) {
         console.log(e)
@@ -230,14 +231,14 @@ async function sendMessage(e) {
 
 }
 
-// socket.on('message:recieve-message', (data, username) => {
-//     const div = document.createElement('div')
-//     div.className = 'o-message'
-//     div.textContent = username + ": " + data
-//     messages.appendChild(div)
-//     scrollToBottom()
+socket.on('message:recieve-message', (data, username) => {
+    const div = document.createElement('div')
+    div.className = 'o-message'
+    div.textContent = username + ": " + data
+    messages.appendChild(div)
+    scrollToBottom()
 
-// })
+})
 
 document.getElementById('create-new-group').addEventListener('submit', createNewGroup)
 
@@ -321,72 +322,24 @@ async function showGroupMessages() {
     try {
         console.log(curr_group)
         const group = curr_group
-        // socket.emit('join-room', group.id, (groupMessages, id, groupUsers) => {
-        //     messages.innerHTML = ``
-        //     document.querySelector('.group-message h2').textContent = group.name
-        //     groupMessages.forEach(message => {
-        //         console.log('hii')
-        //         showMessage(message, groupUsers)
-        //     })
-        //     scrollToBottom()
-        //     users.innerHTML = ``
-        //     groupUsers.forEach(user => {
-        //         showUser(user)
-        //     })
-
-        // })
-        // const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
-        //     headers: {
-        //         'auth-token': localStorage.getItem('token')
-        //     }
-        // })
-        // console.log(res3)
-        // displayUsers.innerHTML = ``
-        // res3.data.forEach(user => {
-        //     addUser(user)
-        // })
-
-        let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
-        let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
-        let mId = 0
-        let uId = 0
-        if (final_messages.length > 0)
-            mId = final_messages[final_messages.length - 1].id
-        if (final_users.length > 0)
-            uId = final_users[final_users.length - 1].id
-        const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}`, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
-        })
-        const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}`, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
-        })
-        console.log(res)
-        console.log(res2)
-        messages.innerHTML = ``
-        final_messages = [...final_messages, ...res.data.messages]
-        document.querySelector('.group-message h2').textContent = group.name
-        final_users = [...final_users, ...res2.data]
-        console.log(final_messages)
-        final_messages.forEach(message => {
-            if (message.type == 'text')
-                showMessage(message, final_users)
+        socket.emit('join-room', group.id, (groupMessages, id, groupUsers) => {
+            messages.innerHTML = ``
+            document.querySelector('.group-message h2').textContent = group.name
+            groupMessages.forEach(message => {
+                console.log('hii')
+                if (message.type == 'text')
+                showMessage(message, groupUsers)
             else
-                showFiles(message, final_users)
+                showFiles(message, groupUsers)
+
+            })
+            scrollToBottom()
+            users.innerHTML = ``
+            groupUsers.forEach(user => {
+                showUser(user)
+            })
 
         })
-        // scrollToBottom()
-        users.innerHTML = ``
-
-
-        final_users.forEach(user => {
-            showUser(user)
-        })
-        localStorage.setItem(`message-${group.id}`, JSON.stringify(final_messages))
-        localStorage.setItem(`user-${group.id}`, JSON.stringify(final_users))
 
         const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
             headers: {
@@ -398,6 +351,59 @@ async function showGroupMessages() {
         res3.data.forEach(user => {
             addUser(user)
         })
+
+        // let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
+        // let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
+        // let mId = 0
+        // let uId = 0
+        // if (final_messages.length > 0)
+        //     mId = final_messages[final_messages.length - 1].id
+        // if (final_users.length > 0)
+        //     uId = final_users[final_users.length - 1].id
+        // const res = await axios.get(`http://localhost:4000/message/get-messages/${group.id}/?messageId=${mId}`, {
+        //     headers: {
+        //         'auth-token': localStorage.getItem('token')
+        //     }
+        // })
+        // const res2 = await axios.get(`http://localhost:4000/group/all-users/${group.id}/?id=${uId}`, {
+        //     headers: {
+        //         'auth-token': localStorage.getItem('token')
+        //     }
+        // })
+        // console.log(res)
+        // console.log(res2)
+        // messages.innerHTML = ``
+        // final_messages = [...final_messages, ...res.data.messages]
+        // document.querySelector('.group-message h2').textContent = group.name
+        // final_users = [...final_users, ...res2.data]
+        // console.log(final_messages)
+        // final_messages.forEach(message => {
+        //     if (message.type == 'text')
+        //         showMessage(message, final_users)
+        //     else
+        //         showFiles(message, final_users)
+
+        // })
+        // // scrollToBottom()
+        // users.innerHTML = ``
+
+
+        // final_users.forEach(user => {
+        //     showUser(user)
+        // })
+        // localStorage.setItem(`message-${group.id}`, JSON.stringify(final_messages))
+        // localStorage.setItem(`user-${group.id}`, JSON.stringify(final_users))
+
+        // const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
+        //     headers: {
+        //         'auth-token': localStorage.getItem('token')
+        //     }
+        // })
+        // console.log(res3)
+        // displayUsers.innerHTML = ``
+        // res3.data.forEach(user => {
+        //     addUser(user)
+        // })
     } catch (e) {
         console.log(e)
     }
@@ -666,6 +672,7 @@ document.getElementById('files').addEventListener('submit', async (e) => {
         div.className = 'u-message u-multi'
         div.textContent = "You"
         const data = res.data
+        socket.emit('file:send-file-data' , data , group.id)
         if (data.type.startsWith('image')) {
             const img = document.createElement('img')
             img.src = data.message
@@ -686,4 +693,28 @@ document.getElementById('files').addEventListener('submit', async (e) => {
     }
 
 
+})
+
+socket.on('file:recieve-file' , (data , name)=>{
+    
+        const div = document.createElement('div')
+        div.className = 'o-message o-multi'
+        div.textContent = name
+       
+        if (data.type.startsWith('image')) {
+            const img = document.createElement('img')
+            img.src = data.message
+            div.appendChild(img)
+        } else if (data.type.startsWith('video')) {
+            const video = document.createElement('video')
+            const source = document.createElement('source')
+            source.src = data.message
+            video.appendChild(source)
+            video.controls = true
+            div.appendChild(video)
+        }
+    
+        messages.appendChild(div)
+   
+    
 })

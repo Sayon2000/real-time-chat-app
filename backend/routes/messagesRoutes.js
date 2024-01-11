@@ -59,4 +59,7 @@ module.exports = (io, socket) => {
 
     })
     socket.on('message:send-message', addMessage)
+    socket.on('file:send-file-data' , (data , groupId)=>{
+        socket.to(groupId).emit('file:recieve-file' , data,socket.user.name)
+    })
 }
