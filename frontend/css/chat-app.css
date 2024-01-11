@@ -290,3 +290,18 @@
     font-weight: 800;
     font-size: large;
 }
+
+.show-add-users > div{
+    display: flex;
+    justify-content: center;
+}
+
+.show-add-users > div > label{
+    font-size: larger;
+    padding: 0px 10px;
+    margin: 5px;
+}
+
+#create-grp{
+    min-width: 6vw;
+}

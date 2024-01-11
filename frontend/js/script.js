@@ -301,8 +301,8 @@ document.getElementById('create-grp').addEventListener('click', async() => {if(d
         input.name=user.id
         input.type = 'checkbox'
 
-        div.appendChild(label)
         div.appendChild(input)
+        div.appendChild(label)
 
         addUsers.appendChild(div)
     })

@@ -12,7 +12,7 @@ exports.createNewGroup = async(req,res)=>{
        const users = await User.findAll({where :{
         id : selectedUsers
        }})
-       const addedUsers = await group.addUsers(selectedUsers)
+       const addedUsers = await group.addUsers(users)
        
        const result = group.toJSON()
        result.member = member
