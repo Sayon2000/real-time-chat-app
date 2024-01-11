@@ -15,7 +15,7 @@ exports.createNewGroup = async(req,res)=>{
        const addedUsers = await group.addUsers(users)
        
        const result = group.toJSON()
-       result.member = member
+       result.member = member[0]
        return res.json({group : result , member , addedUsers})   
     }catch(e){
         console.log(e)
