@@ -692,6 +692,7 @@ document.getElementById('files').addEventListener('submit', async (e) => {
 
         messages.appendChild(div)
         document.getElementById('file').value = ''
+        scrollToBottom()
     } catch (e) {
         console.log(e)
     }
@@ -720,5 +721,5 @@ socket.on('file:recieve-file', (data, name) => {
 
     messages.appendChild(div)
 
-
+    scrollToBottom()
 })
