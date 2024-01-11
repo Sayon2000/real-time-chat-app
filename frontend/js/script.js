@@ -76,9 +76,9 @@ function showGroups(group) {
 
     div.onclick = async () => {
         curr_group = group
-        if(curr_group.member.admin){
+        if (curr_group.member.admin) {
             document.getElementById('add-user-toggle-btn').classList.remove('hide')
-        }else{
+        } else {
             document.getElementById('add-user-toggle-btn').classList.add('hide')
         }
         document.querySelector('.header').classList.remove('hide')
@@ -248,12 +248,12 @@ async function createNewGroup(e) {
         console.log(e.target.name.value)
         const selectedUsers = []
         otherUsers.forEach(user => {
-            if(document.getElementById(user.id).checked){
+            if (document.getElementById(user.id).checked) {
                 console.log(user.name)
                 selectedUsers.push(user.id)
             }
         })
-        const group = await axios.post('http://localhost:4000/group/create', { "name": e.target.name.value ,selectedUsers}, {
+        const group = await axios.post('http://localhost:4000/group/create', { "name": e.target.name.value, selectedUsers }, {
             headers: {
                 'auth-token': localStorage.getItem('token')
             }
@@ -263,7 +263,7 @@ async function createNewGroup(e) {
 
         console.log(group)
         e.target.name.value = ''
-        showGroups(group.data.group)    
+        showGroups(group.data.group)
 
         document.querySelector('.new-group').classList.add('hide')
 
@@ -276,45 +276,46 @@ async function createNewGroup(e) {
     }
 }
 
-document.getElementById('create-grp').addEventListener('click', async() => {if(document.querySelector('.new-group').classList.contains('hide')){
-    document.querySelector('.new-group').classList.remove('hide')
-    const res = await axios.get('http://localhost:4000/group/other-users' , {
-        headers: {
-            'auth-token': localStorage.getItem('token')
-        }
-    })
-    console.log(res)
-    const addUsers = document.querySelector('.show-add-users')
-    document.querySelector('.show-groups').classList.add('hide')
-    addUsers.classList.remove('hide')
-    addUsers.innerHTML = ``
-    otherUsers = res.data
-    res.data.forEach(user =>{
-        console.log(user)
-        const div = document.createElement('div')
-       
-        const label = document.createElement('label')
-        label.for = user.id
-        label.textContent = user.name
+document.getElementById('create-grp').addEventListener('click', async () => {
+    if (document.querySelector('.new-group').classList.contains('hide')) {
+        document.querySelector('.new-group').classList.remove('hide')
+        const res = await axios.get('http://localhost:4000/group/other-users', {
+            headers: {
+                'auth-token': localStorage.getItem('token')
+            }
+        })
+        console.log(res)
+        const addUsers = document.querySelector('.show-add-users')
+        document.querySelector('.show-groups').classList.add('hide')
+        addUsers.classList.remove('hide')
+        addUsers.innerHTML = ``
+        otherUsers = res.data
+        res.data.forEach(user => {
+            console.log(user)
+            const div = document.createElement('div')
 
-        const input = document.createElement('input')
-        input.id=user.id
-        input.name=user.id
-        input.type = 'checkbox'
+            const label = document.createElement('label')
+            label.for = user.id
+            label.textContent = user.name
 
-        div.appendChild(input)
-        div.appendChild(label)
+            const input = document.createElement('input')
+            input.id = user.id
+            input.name = user.id
+            input.type = 'checkbox'
 
-        addUsers.appendChild(div)
-    })
-    document.querySelector('#create-grp').textContent = 'Back'
-}else{
-    document.querySelector('#create-grp').textContent = 'Create Group'
-    document.querySelector('.new-group').classList.add('hide')
-    const addUsers = document.querySelector('.show-add-users')
-    document.querySelector('.show-groups').classList.remove('hide')
-    addUsers.classList.add('hide')
-}
+            div.appendChild(input)
+            div.appendChild(label)
+
+            addUsers.appendChild(div)
+        })
+        document.querySelector('#create-grp').textContent = 'Back'
+    } else {
+        document.querySelector('#create-grp').textContent = 'Create Group'
+        document.querySelector('.new-group').classList.add('hide')
+        const addUsers = document.querySelector('.show-add-users')
+        document.querySelector('.show-groups').classList.remove('hide')
+        addUsers.classList.add('hide')
+    }
 })
 
 async function showGroupMessages() {
@@ -328,9 +329,9 @@ async function showGroupMessages() {
             groupMessages.forEach(message => {
                 console.log('hii')
                 if (message.type == 'text')
-                showMessage(message, groupUsers)
-            else
-                showFiles(message, groupUsers)
+                    showMessage(message, groupUsers)
+                else
+                    showFiles(message, groupUsers)
 
             })
             scrollToBottom()
@@ -340,17 +341,20 @@ async function showGroupMessages() {
             })
 
         })
+        if (group.member.admin) {
 
-        const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
-            headers: {
-                'auth-token': localStorage.getItem('token')
-            }
-        })
-        console.log(res3)
-        displayUsers.innerHTML = ``
-        res3.data.forEach(user => {
-            addUser(user)
-        })
+
+            const res3 = await axios.post(`http://localhost:4000/admin/show-users/${group.id}`, null, {
+                headers: {
+                    'auth-token': localStorage.getItem('token')
+                }
+            })
+            console.log(res3)
+            displayUsers.innerHTML = ``
+            res3.data.forEach(user => {
+                addUser(user)
+            })
+        }
 
         // let final_messages = JSON.parse(localStorage.getItem(`message-${group.id}`)) || []
         // let final_users = JSON.parse(localStorage.getItem(`user-${group.id}`)) || []
@@ -563,7 +567,7 @@ document.querySelector('.header').addEventListener('click', () => {
     const users = document.querySelector('.show-users')
     const divUsers = document.querySelector('.users')
     const addUser = document.querySelector('.add-users')
-    
+
     addUser.classList.add('hide')
     if (users.classList.contains('hide')) {
         message.classList.add('hide')
@@ -608,7 +612,7 @@ function addUser(user) {
     btn.onclick = async () => {
         try {
             console.log(curr_group)
- 
+
             const res = await axios.post(`http://localhost:4000/admin/add-user/${curr_group.id}`, {
                 id: user.id
             }, {
@@ -619,7 +623,7 @@ function addUser(user) {
             console.log(res)
             displayUsers.removeChild(div)
             const show_user = res.data.user
-            show_user.member = res.data.user[0]
+            show_user.member = res.data.newUser[0]
             showUser(show_user)
         } catch (e) {
             console.log(e)
@@ -672,7 +676,7 @@ document.getElementById('files').addEventListener('submit', async (e) => {
         div.className = 'u-message u-multi'
         div.textContent = "You"
         const data = res.data
-        socket.emit('file:send-file-data' , data , group.id)
+        socket.emit('file:send-file-data', data, group.id)
         if (data.type.startsWith('image')) {
             const img = document.createElement('img')
             img.src = data.message
@@ -687,7 +691,7 @@ document.getElementById('files').addEventListener('submit', async (e) => {
         }
 
         messages.appendChild(div)
-        document.getElementById('file').value =''
+        document.getElementById('file').value = ''
     } catch (e) {
         console.log(e)
     }
@@ -695,26 +699,26 @@ document.getElementById('files').addEventListener('submit', async (e) => {
 
 })
 
-socket.on('file:recieve-file' , (data , name)=>{
-    
-        const div = document.createElement('div')
-        div.className = 'o-message o-multi'
-        div.textContent = name
-       
-        if (data.type.startsWith('image')) {
-            const img = document.createElement('img')
-            img.src = data.message
-            div.appendChild(img)
-        } else if (data.type.startsWith('video')) {
-            const video = document.createElement('video')
-            const source = document.createElement('source')
-            source.src = data.message
-            video.appendChild(source)
-            video.controls = true
-            div.appendChild(video)
-        }
-    
-        messages.appendChild(div)
-   
-    
+socket.on('file:recieve-file', (data, name) => {
+
+    const div = document.createElement('div')
+    div.className = 'o-message o-multi'
+    div.textContent = name
+
+    if (data.type.startsWith('image')) {
+        const img = document.createElement('img')
+        img.src = data.message
+        div.appendChild(img)
+    } else if (data.type.startsWith('video')) {
+        const video = document.createElement('video')
+        const source = document.createElement('source')
+        source.src = data.message
+        video.appendChild(source)
+        video.controls = true
+        div.appendChild(video)
+    }
+
+    messages.appendChild(div)
+
+
 })

@@ -134,7 +134,7 @@ exports.addUser = async(req,res)=>{
         if(member.admin){
             const user = await User.findByPk(id)
             const newUser = await group.addUser(user)
-            return res.json({user : newUser , msg :"New User added successfully"})
+            return res.json({user , newUser , msg :"New User added successfully"})
         }else{
             return res.json({msg :"You don't have the required permissions"})
         }
